@@ -1,58 +1,155 @@
-# churnguard-customer-churn-prediction
-Telecom customer churn analysis and prediction using Python and machine learning.
-# ChurnGuard — Customer Churn Analysis and Prediction
+# ChurnGuard – Telecom Customer Churn Prediction
 
-Analyzed telecom customer data and built Logistic Regression models to predict whether a customer might stay or leave.
+![ChurnGuard CI](https://github.com/pavanndasarii/churnguard-customer-churn-prediction/actions/workflows/ci.yml/badge.svg)
 
-# Tools Used
-Python, Pandas, Matplotlib, Scikit-learn, and Google Colab.
+ChurnGuard is a machine learning project that predicts whether a telecom customer is likely to leave the service. It uses customer information and service details to identify potential churn and support customer-retention decisions.
 
-# Dataset and Data Cleaning
-- Started with 1,030 records and 12 columns.
-- Removed duplicate rows and the customer ID column.
-- Standardized category labels and converted total charges to numeric values.
-- Handled missing values and removed records outside the assignment’s allowed ranges.
-- Retained 980 records for analysis and modeling.
+## Project Overview
 
-# Exploratory Analysis
-- Overall customer churn was 31.73%.
-- Month-to-month customers had 47.45% churn, compared with 12.28% for one-year and 7.10% for two-year contracts.
-- Customers who left had average monthly charges of 67.99, compared with 63.88 for those who stayed.
-- Average tenure was nearly the same for both groups.
+- Cleaned and explored a telecom customer dataset.
+- Built a machine learning pipeline using Scikit-learn.
+- Compared Logistic Regression and Random Forest models.
+- Applied hyperparameter tuning using GridSearchCV.
+- Evaluated model performance using accuracy, precision, recall, and F1-score.
+- Developed a REST API using FastAPI.
+- Containerized the API using Docker.
+- Added automated tests and GitHub Actions CI.
 
-These patterns show associations, not the causes of churn.
+## Dataset
 
-# Model Approach
-- Used an 80/20 stratified train-test split.
-- Learned numeric missing-value replacements and scaling parameters from training data only.
-- Evaluated Logistic Regression using accuracy, precision, recall, F1-score, and a confusion matrix.
-- Compared a 14-feature model with a five-feature model.
+- Original records: 1,030
+- Records after duplicate removal: 1,000
+- Target variable: `Churn`
+- Prediction classes: `yes` and `no`
 
-# Evaluation Results
+The dataset contains customer information such as tenure, contract type, internet service, monthly charges, and total charges.
 
-| Approach | Test Accuracy |
+## Machine Learning Approach
+
+**Data preprocessing**
+- Removed duplicate records.
+- Standardized inconsistent categorical values.
+- Handled invalid and missing values.
+- Split the data into training and testing sets using stratification.
+- Used median imputation and scaling for numerical features.
+- Used most-frequent imputation and one-hot encoding for categorical features.
+
+**Model development**
+- Logistic Regression
+- Random Forest
+- Cross-validation
+- Hyperparameter tuning using GridSearchCV
+- Churn probability threshold selection using training cross-validation predictions
+
+## Model Performance
+
+The tuned Logistic Regression model was selected based on cross-validation F1-score.
+
+| Metric | Test Performance |
 |---|---:|
-| Always predict Stay | 68.37% |
-| Logistic Regression — 14 features | 68.88% |
-| Logistic Regression — 5 features | 71.43% |
+| Accuracy | 69.50% |
+| Precision (Churn = Yes) | 51.40% |
+| Recall (Churn = Yes) | 85.94% |
+| F1-score (Churn = Yes) | 64.33% |
 
-The five-feature model achieved approximately 58% precision and 35% recall for churn.
+The classification threshold was selected as 0.45 using out-of-fold predictions on the training data.
 
-# Prediction Demonstration
-A final five-feature model was trained on all 980 records for demonstration. It accepts tenure, monthly charges, total charges, senior citizen status, and contract type to produce a Stay or Churn prediction.
+## API Development
 
-The evaluation scores above belong to the held-out test experiments, not this final demonstration model.
+Built a REST API using FastAPI to serve churn predictions.
 
-# How to Run
-1. Download the notebook and CSV dataset from this repository.
-2. Open the notebook in Google Colab.
-3. Run the upload cell and select the CSV.
-4. Ensure the filename in pd.read_csv() matches the uploaded CSV filename.
-5. Run the remaining cells in order.
-6. Enter customer details when prompted.
+**Available endpoints**
 
-# Assumptions and Limitations
-- Following the assignment’s convention, missing InternetService entries were treated as no internet service.
-- Both model versions were compared on the same test split; further validation is needed.
-- The five-feature model missed approximately 65% of actual churners in the test set.
-- This is an educational project. No reduction in churn or revenue improvement was measured.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | Check API status |
+| POST | `/predict` | Predict customer churn |
+
+Interactive API documentation is available at `/docs` when the application is running.
+
+## Docker
+
+The application is containerized using Docker.
+
+Build the Docker image:
+
+```bash
+docker build -t churnguard-api .
+```
+
+Run the container:
+
+```bash
+docker run -p 8000:8000 churnguard-api
+```
+
+Open the API documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+## Automated Testing and CI
+
+- Used Pytest to test the API endpoints.
+- Verified the prediction response and probability output.
+- Configured GitHub Actions to automatically run tests on pushes and pull requests to the main branch.
+- Latest CI workflow completed successfully.
+
+## Technologies Used
+
+- Python
+- Pandas, NumPy
+- Matplotlib, Seaborn
+- Scikit-learn
+- FastAPI, Pydantic
+- Joblib
+- Docker
+- Pytest
+- Git, GitHub
+- GitHub Actions
+- Google Colab
+
+## Project Structure
+
+```text
+ChurnGuard/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── tests/
+│   └── test_api.py
+├── ChurnGuard (1).ipynb
+├── churnguard_data.csv
+├── churnguard_logistic_model.joblib
+├── app.py
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
+
+## Running Tests
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the tests:
+
+```bash
+pytest -q
+```
+
+## Future Improvements
+
+- Deploy the API to a cloud platform.
+- Add model monitoring and performance tracking.
+- Explore additional machine learning models and optimization techniques.
+
+---
+
+**Author:** Dasari Pavan Kumar
+
+[GitHub](https://github.com/pavanndasarii)
