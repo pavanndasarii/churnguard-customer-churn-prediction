@@ -1,54 +1,43 @@
-
 import joblib
 import pandas as pd
-
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import Optional
 
-# Load trained model
-model = joblib.load("churnguard_logistic_model.joblib")
+# Load model and threshold
+saved = joblib.load("churnguard_logistic_model.joblib")
+model = saved["model"]
+threshold = saved["threshold"]
 
-# Decision threshold
-threshold = 0.45
+app = FastAPI(title="ChurnGuard API")
 
-# Customer input validation
+
 class CustomerData(BaseModel):
-    gender: str
     SeniorCitizen: int
-    tenure: Optional[float] = None
+    tenure: float | None = None
+    MonthlyCharges: float | None = None
+    TotalCharges: float | None = None
+    gender: str
     PhoneService: str
-    InternetService: Optional[str] = None
+    InternetService: str | None = None
     Contract: str
     PaperlessBilling: str
     PaymentMethod: str
-    MonthlyCharges: Optional[float] = None
-    TotalCharges: Optional[float] = None
 
-# Create API
-app = FastAPI(
-    title="ChurnGuard API",
-    description="Telecom Customer Churn Prediction API",
-    version="1.0"
-)
 
 @app.get("/")
 def home():
     return {"message": "ChurnGuard API is running"}
 
+
 @app.post("/predict")
-def predict_churn(customer: CustomerData):
+def predict(data: CustomerData):
+    customer = pd.DataFrame([data.model_dump()])
 
-    customer_df = pd.DataFrame([customer.model_dump()])
-
-    probability = model.predict_proba(customer_df)[0][
-        list(model.classes_).index("yes")
-    ]
-
+    probability = float(model.predict_proba(customer)[0][1])
     prediction = "yes" if probability >= threshold else "no"
 
     return {
         "churn_prediction": prediction,
-        "churn_probability": round(float(probability), 4),
-        "threshold": threshold
+        "churn_probability": round(probability, 4),
+        "threshold": round(threshold, 4)
     }

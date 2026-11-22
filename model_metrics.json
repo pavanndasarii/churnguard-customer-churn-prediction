@@ -1,0 +1,7 @@
+{
+    "model": "Logistic Regression",
+    "accuracy": 0.695,
+    "churn_f1_score": 0.6433,
+    "churn_recall": 0.8594,
+    "threshold": 0.44475882931166955
+}
