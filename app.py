@@ -34,7 +34,7 @@ def predict(data: CustomerData):
     customer = pd.DataFrame([data.model_dump()])
 
     yes_index = list(model.classes_).index("yes")
-probability = float(model.predict_proba(customer)[0][yes_index])
+    probability = float(model.predict_proba(customer)[0][yes_index])
     prediction = "yes" if probability >= threshold else "no"
 
     return {
