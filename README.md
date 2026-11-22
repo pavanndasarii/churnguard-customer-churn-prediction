@@ -2,18 +2,18 @@
 
 ![ChurnGuard CI](https://github.com/pavanndasarii/churnguard-customer-churn-prediction/actions/workflows/ci.yml/badge.svg)
 
-ChurnGuard is a machine learning project that predicts whether a telecom customer is likely to leave the service. It uses customer information and service details to identify potential churn and support customer-retention decisions.
+ChurnGuard is a machine learning project that predicts whether a telecom customer is likely to leave a service. It helps identify potential churn customers using their account and service information.
 
 ## Project Overview
 
-- Cleaned and explored a telecom customer dataset.
-- Built a machine learning pipeline using Scikit-learn.
-- Compared Logistic Regression and Random Forest models.
-- Applied hyperparameter tuning using GridSearchCV.
-- Evaluated model performance using accuracy, precision, recall, and F1-score.
+- Cleaned and explored telecom customer data.
+- Built machine learning pipelines using Scikit-learn.
+- Compared Logistic Regression and Random Forest.
+- Performed hyperparameter tuning using GridSearchCV.
+- Optimized the churn prediction threshold using cross-validation predictions.
 - Developed a REST API using FastAPI.
-- Containerized the API using Docker.
-- Added automated tests and GitHub Actions CI.
+- Containerized the application using Docker.
+- Added automated API tests and GitHub Actions CI.
 
 ## Dataset
 
@@ -22,79 +22,120 @@ ChurnGuard is a machine learning project that predicts whether a telecom custome
 - Target variable: `Churn`
 - Prediction classes: `yes` and `no`
 
-The dataset contains customer information such as tenure, contract type, internet service, monthly charges, and total charges.
+The dataset includes customer tenure, contract type, internet service, monthly charges, total charges, and other service details.
 
 ## Machine Learning Approach
 
-**Data preprocessing**
+### Data preprocessing
 - Removed duplicate records.
 - Standardized inconsistent categorical values.
 - Handled invalid and missing values.
-- Split the data into training and testing sets using stratification.
-- Used median imputation and scaling for numerical features.
-- Used most-frequent imputation and one-hot encoding for categorical features.
+- Used stratified train-test splitting.
+- Applied median imputation and scaling to numerical features.
+- Applied most-frequent imputation and one-hot encoding to categorical features.
 
-**Model development**
+### Model development and optimization
 - Logistic Regression
 - Random Forest
 - Cross-validation
-- Hyperparameter tuning using GridSearchCV
-- Churn probability threshold selection using training cross-validation predictions
-
-## Model Performance
+- GridSearchCV for hyperparameter tuning
+- Churn probability threshold optimization using out-of-fold training predictions
 
 The tuned Logistic Regression model was selected based on cross-validation F1-score.
 
-| Metric | Test Performance |
+## Model Performance
+
+Final evaluation on the held-out test set:
+
+| Metric | Result |
 |---|---:|
 | Accuracy | 69.50% |
-| Precision (Churn = Yes) | 51.40% |
-| Recall (Churn = Yes) | 85.94% |
-| F1-score (Churn = Yes) | 64.33% |
+| Churn Precision | 51.40% |
+| Churn Recall | 85.94% |
+| Churn F1-score | 64.33% |
+| Optimized threshold | 0.4448 |
 
-The classification threshold was selected as 0.45 using out-of-fold predictions on the training data.
+The threshold was selected using out-of-fold predictions on the training data.
 
 ## API Development
 
-Built a REST API using FastAPI to serve churn predictions.
+Built a REST API using FastAPI to serve predictions from the trained model.
 
-**Available endpoints**
+### Available endpoints
 
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/` | Check API status |
 | POST | `/predict` | Predict customer churn |
 
-Interactive API documentation is available at `/docs` when the application is running.
+Interactive API documentation is available at `/docs`.
+
+### Sample prediction request
+
+```json
+{
+  "SeniorCitizen": 0,
+  "tenure": 12,
+  "MonthlyCharges": 70.5,
+  "TotalCharges": 850.0,
+  "gender": "female",
+  "PhoneService": "yes",
+  "InternetService": "fiber optic",
+  "Contract": "month-to-month",
+  "PaperlessBilling": "yes",
+  "PaymentMethod": "electronic check"
+}
+```
+
+### Sample prediction response
+
+```json
+{
+  "churn_prediction": "yes",
+  "churn_probability": 0.6488,
+  "threshold": 0.4448
+}
+```
+
+The API returns the predicted churn class, churn probability, and decision threshold.
 
 ## Docker
 
-The application is containerized using Docker.
+The application has been built and tested locally inside a Docker container.
 
-Build the Docker image:
+### Build the Docker image
 
 ```bash
 docker build -t churnguard-api .
 ```
 
-Run the container:
+### Run the container
 
 ```bash
-docker run -p 8000:8000 churnguard-api
+docker run --rm -p 8000:8000 churnguard-api
 ```
 
-Open the API documentation:
+### Open API documentation
 
 ```text
 http://localhost:8000/docs
 ```
 
+The `/predict` endpoint was tested successfully through the Dockerized API and returned HTTP 200.
+
 ## Automated Testing and CI
 
-- Used Pytest to test the API endpoints.
-- Verified the prediction response and probability output.
-- Configured GitHub Actions to automatically run tests on pushes and pull requests to the main branch.
-- Latest CI workflow completed successfully.
+- Used Pytest for automated API testing.
+- Tested API status and prediction endpoints.
+- Used GitHub Actions to run tests automatically on repository pushes.
+- Successfully verified the CI workflow.
+
+Run tests locally:
+
+```bash
+pip install -r requirements.txt
+pytest -q
+```
 
 ## Technologies Used
 
@@ -105,7 +146,7 @@ http://localhost:8000/docs
 - FastAPI, Pydantic
 - Joblib
 - Docker
-- Pytest
+- Pytest, HTTPX
 - Git, GitHub
 - GitHub Actions
 - Google Colab
@@ -122,31 +163,18 @@ ChurnGuard/
 ├── ChurnGuard (1).ipynb
 ├── churnguard_data.csv
 ├── churnguard_logistic_model.joblib
+├── model_metrics.json
 ├── app.py
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
 ```
 
-## Running Tests
-
-Install the dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the tests:
-
-```bash
-pytest -q
-```
-
 ## Future Improvements
 
 - Deploy the API to a cloud platform.
 - Add model monitoring and performance tracking.
-- Explore additional machine learning models and optimization techniques.
+- Explore additional machine learning models.
 
 ---
 
