@@ -2,18 +2,18 @@
 
 ![ChurnGuard CI](https://github.com/pavanndasarii/churnguard-customer-churn-prediction/actions/workflows/ci.yml/badge.svg)
 
-ChurnGuard is a machine learning project that predicts whether a telecom customer is likely to leave a service. It helps identify potential churn customers using their account and service information.
+ChurnGuard is a machine learning project that predicts whether a telecom customer is likely to leave a service. It uses customer information and service details to identify potential churn and support customer-retention decisions.
 
 ## Project Overview
 
-- Cleaned and explored telecom customer data.
+- Cleaned and explored a telecom customer dataset.
 - Built machine learning pipelines using Scikit-learn.
-- Compared Logistic Regression and Random Forest.
-- Performed hyperparameter tuning using GridSearchCV.
-- Optimized the churn prediction threshold using cross-validation predictions.
+- Compared Logistic Regression and Random Forest models.
+- Applied hyperparameter tuning using GridSearchCV.
+- Evaluated model performance using accuracy, precision, recall, and F1-score.
 - Developed a REST API using FastAPI.
-- Containerized the application using Docker.
-- Added automated API tests and GitHub Actions CI.
+- Containerized the API using Docker.
+- Added automated tests and GitHub Actions CI.
 
 ## Dataset
 
@@ -22,120 +22,79 @@ ChurnGuard is a machine learning project that predicts whether a telecom custome
 - Target variable: `Churn`
 - Prediction classes: `yes` and `no`
 
-The dataset includes customer tenure, contract type, internet service, monthly charges, total charges, and other service details.
+The dataset contains customer information such as tenure, contract type, internet service, monthly charges, and total charges.
 
 ## Machine Learning Approach
 
-### Data preprocessing
+**Data preprocessing**
+
 - Removed duplicate records.
 - Standardized inconsistent categorical values.
 - Handled invalid and missing values.
-- Used stratified train-test splitting.
-- Applied median imputation and scaling to numerical features.
-- Applied most-frequent imputation and one-hot encoding to categorical features.
+- Split the data into training and testing sets using stratification.
+- Used median imputation and scaling for numerical features.
+- Used most-frequent imputation and one-hot encoding for categorical features.
 
-### Model development and optimization
+**Model development**
+
 - Logistic Regression
 - Random Forest
 - Cross-validation
-- GridSearchCV for hyperparameter tuning
-- Churn probability threshold optimization using out-of-fold training predictions
-
-The tuned Logistic Regression model was selected based on cross-validation F1-score.
+- Hyperparameter tuning using GridSearchCV
+- Churn probability threshold selection using training cross-validation predictions
 
 ## Model Performance
 
-Final evaluation on the held-out test set:
+The tuned Logistic Regression model was selected based on cross-validation F1-score.
 
-| Metric | Result |
+| Metric | Test Performance |
 |---|---:|
 | Accuracy | 69.50% |
-| Churn Precision | 51.40% |
-| Churn Recall | 85.94% |
-| Churn F1-score | 64.33% |
-| Optimized threshold | 0.4448 |
+| Precision (Churn = Yes) | 51.40% |
+| Recall (Churn = Yes) | 85.94% |
+| F1-score (Churn = Yes) | 64.33% |
 
-The threshold was selected using out-of-fold predictions on the training data.
+The classification threshold was selected as approximately `0.4448` using out-of-fold predictions on the training data.
 
 ## API Development
 
-Built a REST API using FastAPI to serve predictions from the trained model.
+Built a REST API using FastAPI to serve churn predictions.
 
-### Available endpoints
+**Available endpoints**
 
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/` | Check API status |
 | POST | `/predict` | Predict customer churn |
 
-Interactive API documentation is available at `/docs`.
-
-### Sample prediction request
-
-```json
-{
-  "SeniorCitizen": 0,
-  "tenure": 12,
-  "MonthlyCharges": 70.5,
-  "TotalCharges": 850.0,
-  "gender": "female",
-  "PhoneService": "yes",
-  "InternetService": "fiber optic",
-  "Contract": "month-to-month",
-  "PaperlessBilling": "yes",
-  "PaymentMethod": "electronic check"
-}
-```
-
-### Sample prediction response
-
-```json
-{
-  "churn_prediction": "yes",
-  "churn_probability": 0.6488,
-  "threshold": 0.4448
-}
-```
-
-The API returns the predicted churn class, churn probability, and decision threshold.
+Interactive API documentation is available at `/docs` when the application is running.
 
 ## Docker
 
-The application has been built and tested locally inside a Docker container.
+The application is containerized using Docker.
 
-### Build the Docker image
+**Build the Docker image:**
 
 ```bash
 docker build -t churnguard-api .
 ```
 
-### Run the container
+**Run the container:**
 
 ```bash
-docker run --rm -p 8000:8000 churnguard-api
+docker run -d -p 8000:8000 --name churnguard-container churnguard-api
 ```
 
-### Open API documentation
+**Open API documentation:**
 
-```text
 http://localhost:8000/docs
-```
-
-The `/predict` endpoint was tested successfully through the Dockerized API and returned HTTP 200.
 
 ## Automated Testing and CI
 
-- Used Pytest for automated API testing.
-- Tested API status and prediction endpoints.
-- Used GitHub Actions to run tests automatically on repository pushes.
+- Used Pytest to test API endpoints.
+- Verified prediction responses and probability outputs.
+- Configured GitHub Actions to automatically run tests on pushes and pull requests to the main branch.
 - Successfully verified the CI workflow.
-
-Run tests locally:
-
-```bash
-pip install -r requirements.txt
-pytest -q
-```
 
 ## Technologies Used
 
@@ -146,7 +105,7 @@ pytest -q
 - FastAPI, Pydantic
 - Joblib
 - Docker
-- Pytest, HTTPX
+- Pytest
 - Git, GitHub
 - GitHub Actions
 - Google Colab
@@ -160,7 +119,7 @@ ChurnGuard/
 │       └── ci.yml
 ├── tests/
 │   └── test_api.py
-├── ChurnGuard (1).ipynb
+├── ChurnGuard.ipynb
 ├── churnguard_data.csv
 ├── churnguard_logistic_model.joblib
 ├── model_metrics.json
@@ -170,14 +129,28 @@ ChurnGuard/
 └── README.md
 ```
 
+## Running Tests
+
+**Install dependencies:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Run tests:**
+
+```bash
+pytest -q
+```
+
 ## Future Improvements
 
 - Deploy the API to a cloud platform.
 - Add model monitoring and performance tracking.
-- Explore additional machine learning models.
+- Explore additional machine learning models and optimization techniques.
 
 ---
 
 **Author:** Dasari Pavan Kumar
 
-[GitHub](https://github.com/pavanndasarii)
+[GitHub Profile](https://github.com/pavanndasarii)
